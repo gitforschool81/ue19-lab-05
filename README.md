@@ -1,39 +1,58 @@
-Joke App with a Public API
+# ue19-lab-05
 
-This project is a simple script that fetches a random joke from a public API and prints it to the console.
+![Python](https://img.shields.io/badge/-Python-blue?logo=python&logoColor=white)
 
-🚀 How to Install and Run the Project
+## 📝 Description
 
-You have two options to run this project.
+The ue19-lab-05 project, built with Python, provides a foundational structure for various applications. While specific features are to be implemented based on the lab's requirements, the Python base ensures flexibility and ease of development. This project serves as an excellent starting point for learning core programming principles and implementing custom functionalities.
 
-Option 1: Run Natively with Python
+## 🛠️ Tech Stack
 
-This method runs the script directly on your machine.
+- 🐍 Python
 
-Clone the repository:
 
-git clone https://github.com/gitforschool81/ue19-lab-05.git
-cd ue19-lab-05
-pip install requests
-(Note: It's highly recommended to do this inside a virtual environment.)
-python3 app.py
+## 📦 Key Dependencies
 
-Option 2: Run with Docker
+```
+certifi: 2025.10.5
+charset-normalizer: 3.4.4
+idna: 3.11
+requests: 2.32.5
+urllib3: 2.5.0
+```
 
-This method uses the included Dockerfile to build and run the app in an isolated container.
+## 📁 Project Structure
 
-Clone the repository:
+```
+.
+├── Dockerfile
+├── app.py
+└── requirements.txt
+```
 
-git clone https://github.com/gitforschool81/ue19-lab-05.git
-cd ue19-lab-05
-docker build -t mon-app-joke .
-docker run --rm mon-app-joke
+## 🛠️ Development Setup
 
-📜 Example Output
+### Python Setup
+1. Install Python (v3.8+ recommended)
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the environment:
+   - Windows: `venv\Scripts\activate`
+   - Unix/MacOS: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
 
-You will see a different joke each time you run it:
-Plaintext
 
-Here's your joke:
-Setup: Why are pirates called pirates?
-Punchline: Because they arrr!
+## 👥 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Clone** your fork: `git clone https://github.com/gitforschool81/ue19-lab-05.git`
+3. **Create** a new branch: `git checkout -b feature/your-feature`
+4. **Commit** your changes: `git commit -am 'Add some feature'`
+5. **Push** to your branch: `git push origin feature/your-feature`
+6. **Open** a pull request
+
+Please ensure your code follows the project's style guidelines and includes tests where applicable.
+
+---
+*This README was generated with ❤️ by ReadmeBuddy*
