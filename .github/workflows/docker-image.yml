@@ -3,42 +3,61 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-  # pull_request trigger removed, as the assignment only specifies push to main
 
-# NEW: Add permissions for the action to write to GitHub Packages
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build:
+  build-scan-and-push: # I renamed the job to be more descriptive
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      # NEW: Step to log in to the GitHub Container Registry (ghcr.io)
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }} # This is your GitHub username
-          password: ${{ secrets.GITHUB_TOKEN }} # A secure, temporary token
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # NEW: Step to automatically create good tags (like :latest and :main)
-      # This will name the image: ghcr.io/your-username/your-repo-name
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
 
-      # MODIFIED: This step now builds AND pushes the image
-      - name: Build and push Docker image
+      # MODIFIED: Step 1 - Build and load the image locally
+      - name: Build and load Docker image
         uses: docker/build-push-action@v5
         with:
-          context: . # Use the current directory as the build context
-          file: ./Dockerfile # Specify the Dockerfile location
-          push: true # This is the magic part: tells it to push
-          tags: ${{ steps.meta.outputs.tags }} # Use the tags from the step above
+          context: .
+          file: ./Dockerfile
+          load: true  # <-- IMPORTANT: Load image into local daemon
+          push: false # <-- IMPORTANT: Do NOT push yet
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # NEW: Step 2 - Scan image for vulnerabilities
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }} # Scan the image we just built
+          format: 'table'         # Output results as a table in the log
+          exit-code: '1'          # <-- IMPORTANT: Fail the workflow if vulnerabilities are found
+          ignore-unfixed: true    # Don't show vulnerabilities with no fix
+          vuln-type: 'os,library' # Scan OS packages and app libraries
+          severity: 'CRITICAL,HIGH' # Only fail for Critical or High severity issues
+
+      # MODIFIED: Step 3 - Push the image
+      # This step will ONLY run if the Trivy scan (Step 2) passes successfully
+      - name: Push Docker image to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true # <-- IMPORTANT: NOW we push
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
